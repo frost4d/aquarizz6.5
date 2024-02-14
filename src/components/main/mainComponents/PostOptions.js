@@ -98,6 +98,7 @@ const PostOptions = (props) => {
         console.error("Error copying link:", error);
         // Handle copy errors gracefully (e.g., display an error message)
       });
+    console.log(`${modifiedUrl}/${getLink}`);
   };
   const handleShareButton = () => {
     shareModal.onOpen();
@@ -159,7 +160,7 @@ const PostOptions = (props) => {
 
                 <ModalFooter>
                   <Button onClick={handleCopyLink} w="100%">
-                    Copy Link{" "}
+                    Copy Link
                   </Button>
                 </ModalFooter>
               </ModalContent>

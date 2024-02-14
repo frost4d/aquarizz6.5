@@ -49,6 +49,7 @@ import {
   ModalOverlay,
   InputGroup,
   InputLeftAddon,
+  Divider,
 } from "@chakra-ui/react";
 import { db, auth, storage } from "../../firebase/firebaseConfig";
 import { UserAuth } from "../context/AuthContext";
@@ -76,6 +77,7 @@ import {
   ChevronUp,
   ShoppingCart,
   Edit2,
+  Info,
 } from "react-feather";
 import Comment from "./mainComponents/Comment";
 import { useForm } from "react-hook-form";
@@ -252,15 +254,22 @@ function ProfilePage() {
     }
     window.location.reload();
   };
-
+  console.log(postData);
   const handleGetId = () => {};
 
   const handleCancelUpload = () => {};
   return (
     <>
-      <Box>
+      <Box position="relative">
+        {/* <Box
+          zIndex="-2"
+          bg="#ededed"
+          h="100vh"
+          w="100vw"
+          position="absolute"
+        ></Box> */}
         {userData && userData ? (
-          <Box key={userData.id}>
+          <Box key={userData.id} zIndex="2">
             <Box>
               <Flex
                 className="navbar"
@@ -270,6 +279,7 @@ function ProfilePage() {
                 boxShadow="1px 0px 12px #aeaeae"
                 w="100vw"
                 overflow="hidden"
+                bg="#fff"
               >
                 <Flex
                   justify="center"
@@ -294,6 +304,7 @@ function ProfilePage() {
                     ></MenuButton>
                     <MenuList>
                       <MenuItem
+                      className="left-side-nav"
                         onClick={() => {
                           navigate("/dashboard");
                         }}
@@ -302,10 +313,20 @@ function ProfilePage() {
                         Buy/Sell
                       </MenuItem>
                       <Link to="/discover">
-                        <MenuItem icon={<Compass size={16} />}>
+                        <MenuItem className="left-side-nav" icon={<Compass size={16} />}>
                           Discover
                         </MenuItem>
                       </Link>
+
+                      <MenuItem
+                      className="left-side-nav"
+                        onClick={() => {
+                          navigate("/about");
+                        }}
+                        icon={<Compass size={16} />}
+                      >
+                        About Aquarizz
+                      </MenuItem>
 
                       <MenuDivider />
                       <MenuGroup title="Account">
@@ -318,6 +339,7 @@ function ProfilePage() {
                           Profile
                         </MenuItem> */}
                         <MenuItem
+                        className="left-side-nav"
                           icon={<LogOut size={16} />}
                           onClick={alert.onOpen}
                         >
@@ -548,6 +570,7 @@ function ProfilePage() {
                           as={IconButton}
                           variant="outline"
                           icon={isOpen ? <ChevronUp /> : <ChevronDown />}
+                          bg="#fff"
                         ></MenuButton>
                         <MenuList>
                           {/* <MenuItem>Edit</MenuItem> */}
@@ -747,67 +770,102 @@ function ProfilePage() {
                 flexDirection="column"
                 boxShadow="0px -4px 5px #e1e1e1"
                 mt="32px"
-                py="24px"
+                pt="24px"
+                // maxHeight="calc(100vh - 320px)"
+                // overflowY="auto"
               >
                 {postData && postData.length === 0 ? (
                   <Flex justify="center" align="center">
                     <Text color="#7f7f7f">It feels so lonely here...</Text>
                   </Flex>
                 ) : (
-                  postData &&
-                  postData.map((post) => (
-                    <Card
-                      key={post.id}
-                      w="50%"
-                      p="24px 24px"
-                      my="16px"
-                      border="1px solid #e1e1e1"
-                    >
-                      <Flex flexDirection="column">
-                        <Box>
-                          <Profile name={post.name} authorId={post.authorId} />
-                        </Box>
-                        <PostOptions
-                          postId={post.id}
-                          authorId={post.authorId}
-                        />
-                        <Text as="kbd" fontSize="10px" color="gray.500">
-                          {formatDistanceToNow(post.datePosted)} ago
-                        </Text>
+                  <Flex
+                    flexDirection="column"
+                    w="100%"
+                    align="center"
+                    justify="center"
+                  >
+                    {postData &&
+                      postData.map((post) => (
+                        <Card
+                          key={post.id}
+                          w="50%"
+                          p="24px 24px"
+                          my="16px"
+                          border="1px solid #e1e1e1"
+                        >
+                          <Flex flexDirection="column">
+                            {/* <Box>
+                              <Profile
+                                name={post.name}
+                                authorId={post.authorId}
+                              />
+                            </Box> */}
+                            <PostOptions
+                              postId={post.id}
+                              authorId={post.authorId}
+                            />
 
-                        <Flex pl="32px" py="32px" justify="space-between">
-                          <Box>
-                            <Heading size="md">{post.postTitle}</Heading>
-                            <br />
-
-                            <Text fontSize="16px">{post.postContent}</Text>
-                          </Box>
-
-                          <Box mr="24px">
-                            {!post.price ? (
-                              <Text>₱ 0.00</Text>
-                            ) : (
-                              <>
-                                <strong>₱ </strong>
-                                {post.price}
-                              </>
-                            )}
-                          </Box>
-                        </Flex>
-                        <Flex w="100%" align="center" justify="center">
-                          <Image
-                            src={post.postImg}
-                            w="20em"
-                            alt="post image"
-                            onError={(e) => (e.target.style.display = "none")}
+                            <Flex ml="0px" mt="16px" textAlign="start">
+                            <Box display={post.profileImage ? "block" : "none"}>
+                            <Image
+                              h="30px"
+                              w="30px"
+                              borderRadius="50%"
+                              src={
+                                post.authorId.photoURL ? "" : post.profileImage
+                              }
+                            mr="8px"
                           />
-                        </Flex>
-                        <Box w="100%">
-                          <Comment postID={post.id} authorId={post.authorId} />
                         </Box>
+
+                        <Profile name={post.name} authorId={post.authorId} />
                       </Flex>
-                    </Card>
-                  ))
+                            
+                            <Text as="kbd" fontSize="10px" color="gray.500" mt="5px">
+                              {formatDistanceToNow(post.datePosted)} ago
+                            </Text>
+
+                            <Flex pl="32px" py="32px" justify="space-between">
+                              <Box>
+                                <Heading size="md">{post.postTitle}</Heading>
+                                <br />
+
+                                <Text fontSize="16px">{post.postContent}</Text>
+                              </Box>
+
+                              <Box mr="24px">
+                                {!post.price ? (
+                                  <Text>₱ 0.00</Text>
+                                ) : (
+                                  <>
+                                    <strong>₱ </strong>
+                                    {post.price}
+                                  </>
+                                )}
+                              </Box>
+                            </Flex>
+                            <Flex w="100%" align="center" justify="center">
+                              <Image
+                                src={post.postImg}
+                                w="20em"
+                                alt="post image"
+                                onError={(e) =>
+                                  (e.target.style.display = "none")
+                                }
+                              />
+                            </Flex>
+                            
+                            <Box w="100%">
+                              <Comment
+                                postID={post.id}
+                                authorId={post.authorId}
+                              />
+                            </Box>
+                          </Flex>
+                        </Card>
+                      ))}
+                  </Flex>
                 )}
               </Flex>
             </Flex>

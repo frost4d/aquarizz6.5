@@ -26,6 +26,7 @@ import {
   AspectRatio,
   Input,
   useToast,
+  AbsoluteCenter,
 } from "@chakra-ui/react";
 import { signOut } from "firebase/auth";
 
@@ -33,7 +34,7 @@ import { signOut } from "firebase/auth";
 import { auth, db } from "../../firebase/firebaseConfig";
 import { Home, Compass, User, LogOut, ShoppingCart } from "react-feather";
 import { useNavigate, Link } from "react-router-dom";
-import { HamburgerIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, SearchIcon } from "@chakra-ui/icons";
 // import { UserAuth } from "./context/AuthContext";
 import { UserAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -151,6 +152,7 @@ const FishLibrary = () => {
         boxShadow="1px 0px 12px #aeaeae"
         w="100vw"
         overflow="hidden"
+        
       >
         <Flex
           cursor="pointer"
@@ -175,6 +177,7 @@ const FishLibrary = () => {
             ></MenuButton>
             <MenuList>
               <MenuItem
+              className="left-side-nav"
                 onClick={() => {
                   navigate("/dashboard");
                 }}
@@ -183,12 +186,13 @@ const FishLibrary = () => {
                 Buy/Sell
               </MenuItem>
               <Link to="/discover">
-                <MenuItem icon={<Compass size={16} />}>Discover</MenuItem>
+                <MenuItem className="left-side-nav" icon={<Compass size={16} />}>Discover</MenuItem>
               </Link>
 
               <MenuDivider />
               <MenuGroup title="Account">
                 <MenuItem
+                className="left-side-nav"
                   onClick={() => {
                     navigate(`/profile/${user.uid}`);
                   }}
@@ -196,7 +200,7 @@ const FishLibrary = () => {
                 >
                   Profile
                 </MenuItem>
-                <MenuItem icon={<LogOut size={16} />} onClick={handleSignOut}>
+                <MenuItem className="left-side-nav" icon={<LogOut size={16} />} onClick={handleSignOut}>
                   Logout
                 </MenuItem>
               </MenuGroup>
@@ -212,15 +216,28 @@ const FishLibrary = () => {
         flexDirection="column"
       >
         <Heading mb="24px">Find more here!</Heading>
-        <Flex align="center" justify="center" w="50%">
+        <Card align="center" w="850px">
+          <CardHeader>
+          {/* <Image
+                    position="absolute"
+                    top="12px"
+                    left="2px"
+                    h="50px"
+                    src={require("../../assets/discoverMoving.gif")}
+                  /> */}
+        <Flex align="center" justify="center" w="730px">
+        <IconButton icon={<SearchIcon />} right="12px"/>
           <Input
             placeholder="Search..."
             mr="12px"
             value={searchText}
+            icon={<SearchIcon />}
             onChange={handleSearchChange}
           />
           <Button onClick={handleSearchClick}>Search</Button>
         </Flex>
+        </CardHeader>
+        </Card>
       </Flex>
       <Flex justify="center" w="100vw" mt="100px">
         {loadingImage ? (
@@ -271,6 +288,7 @@ const FishLibrary = () => {
                       justifyContent="center"
                       alignItems="center"
                       flexDirection="column"
+                      
                     >
                       {data.meta.scientific_classification && (
                         <>

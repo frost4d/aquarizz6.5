@@ -133,7 +133,7 @@ const Register = () => {
                 )}
               </FormControl>
               <FormControl>
-                <FormLabel>Full Name (LN,FN MI)</FormLabel>
+                <FormLabel>Name(You can use any name)</FormLabel>
                 <Input
                   type="text"
                   {...register("name", {

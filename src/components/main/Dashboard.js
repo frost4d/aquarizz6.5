@@ -32,6 +32,7 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogOverlay,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState, useRef } from "react";
 import { HamburgerIcon } from "@chakra-ui/icons";
@@ -63,6 +64,7 @@ import {
   ShoppingCart,
   LogOut,
   CloudLightning,
+  Info,
 } from "react-feather";
 import { connectStorageEmulator } from "firebase/storage";
 
@@ -73,6 +75,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState();
   const [userData, setUserData] = useState({});
+
   const {
     register,
     handleSubmit,
@@ -143,12 +146,27 @@ const Dashboard = () => {
   };
   // console.log(posts);
 
+  const openAbout = () => {
+    const location = window.location.href;
+    const splitUrl = location.split("/");
+    const rootUrl = splitUrl.slice(0, -1).join("/");
+    const finalUrl = rootUrl + "/about";
+    // console.log(finalUrl);
+    window.open(finalUrl, "_blank", "noopener, noreferrer");
+  };
+
   return (
     <>
       {/* container */}
-      <Box className="dashboardWrapper" h="100vh" w="100vw">
+      <Box className="dashboardWrapper" h="100vh" w="100vw" position="relative">
         {/* navbarContainer */}
-
+        <Box
+          position="absolute"
+          zIndex="-2"
+          bg="#ededed"
+          h="100vh"
+          w="100vw"
+        ></Box>
         <Flex
           className="navbar"
           justify="space-between"
@@ -158,6 +176,8 @@ const Dashboard = () => {
           w="100vw"
           overflow="hidden"
           // bg="#BBE2EC"
+          zIndex="2"
+          bg="#fff"
         >
           <Flex
             align="center"
@@ -243,7 +263,7 @@ const Dashboard = () => {
                         objectFit="cover"
                         h="100%"
                         w="100%"
-                        src={user.photoURL}
+                        src={!user.photoURL ? " " : user.photoURL}
                       />
                     </Box>
                   </>
@@ -263,6 +283,7 @@ const Dashboard = () => {
           pt="24px"
           align="center"
           justify="center"
+          zIndex="2"
         >
           {/* commented grid */}
           <>
@@ -412,14 +433,15 @@ const Dashboard = () => {
           <Flex w="100%" h="100%" justify="center">
             <Flex
               flexGrow=".5"
-              m="0 24px 0 12px"
+              m="0 24px 0 24px"
               py="16px"
               h="100%"
               flexFlow="column"
               align="start"
               border="1px solid #e1e1e1"
               bg="#fff"
-              boxShadow="0 12px 24px #e1e1e1"
+              boxShadow="0 12px 12px #e1e1e1"
+              display={window.innerWidth < 375 ? "none" : "flex"}
             >
               <Card w="100%" p="16px 0" bg="#fff">
                 {/* {userData && ( */}
@@ -436,7 +458,7 @@ const Dashboard = () => {
                       w="100%"
                       src={
                         sessionStorage.getItem("photo") === "undefined"
-                          ? " "
+                          ? "Please upload a picture"
                           : sessionStorage.getItem("photo")
                       }
                       objectFit="cover"
@@ -469,8 +491,8 @@ const Dashboard = () => {
                   }}
                   variant="none"
                 >
-                  <ShoppingCart strokeWidth={1} />
-                  <Text>Buy&Sell</Text>
+                  <ShoppingCart strokeWidth={1.5} />
+                  <Text fontWeight="600">Buy&Sell</Text>
                 </Flex>
                 <Flex
                   className="left-side-nav"
@@ -480,24 +502,60 @@ const Dashboard = () => {
                   }}
                   variant="none"
                 >
-                  <Compass strokeWidth={1} />
-                  <Text>Discover</Text>
+                  <Compass strokeWidth={1.5} />
+                  <Text fontWeight="600">Discover</Text>
                 </Flex>
-                <Divider />
-                <Box></Box>
                 <Flex
                   className="left-side-nav"
                   // ml="12px"
-                  onClick={handleSignOut}
+                  onClick={() => {
+                    openAbout();
+                  }}
                   variant="none"
                 >
-                  <LogOut strokeWidth={1} />
-                  <Text> Logout</Text>
+                  <Info strokeWidth={1.5} />
+                  <Text fontWeight="600">About Aquarizz</Text>
+                </Flex>
+                <Box>
+                  <Divider />
+                </Box>
+                <Flex
+                  className="left-side-nav"
+                  // ml="12px"
+                  onClick={alert.onOpen}
+                  variant="none"
+                >
+                  <LogOut strokeWidth={1.5} />
+                  <Text fontWeight="600"> Logout</Text>
+                  <AlertDialog isOpen={alert.isOpen} onClose={alert.onClose}>
+                    <AlertDialogOverlay />
+                    <AlertDialogContent>
+                      <AlertDialogHeader>Are you leaving?</AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <Button
+                          onClick={handleSignOut}
+                          colorScheme="red"
+                          mr="6px"
+                        >
+                          Yes
+                        </Button>
+                        <Button ml="6px" onClick={alert.onClose}>
+                          No
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </Flex>
               </Box>
             </Flex>
 
-            <Box flexGrow="1.5" flexDirection="column" bg="#fff" maxHeight="calc(100vh - 100px)" overflowY="auto">
+            <Box
+              flexGrow="1.5"
+              flexDirection="column"
+              bg="#fff"
+              maxHeight="calc(100vh - 100px)"
+              overflowY="auto"
+            >
               <PostForm fetchData={fetchData} />
               <Box border="1px solid #e1e1e1" p="16px 32px">
                 {posts &&
@@ -531,10 +589,16 @@ const Dashboard = () => {
                         <Profile name={post.name} authorId={post.authorId} />
                       </Flex>
 
-                      <Text as="kbd" ml="24px" fontSize="10px" color="gray.500">
+                      <Text
+                        as="kbd"
+                        ml="24px"
+                        mt="4px"
+                        fontSize="10px"
+                        color="gray.500"
+                      >
                         {formatDistanceToNow(post.datePosted)} ago
                       </Text>
-                      <Flex pl="32px" py="32px" justify="space-between">
+                      <Flex pl="32px" pt="12px" justify="space-between">
                         <Box>
                           <Heading size="md">{post.postTitle}</Heading>
                           <br />
@@ -590,12 +654,20 @@ const Dashboard = () => {
                   ))}
               </Box>
             </Box>
-            <Box flexGrow="1" m="0 12px 0 32px" h="100%" bg="#fff">
+            <Box
+              flexGrow="1"
+              m="0 32px 0 32px"
+              h="100%"
+              bg="#fff"
+              pl="12px"
+              boxShadow="0 12px 12px #e1e1e1"
+              display={window.innerWidth < 375 ? "none" : " "}
+            >
               {userProfile && (
                 <>
                   <Flex justify="center" flexDirection="column">
                     <Heading fontSize="2xl" pt="6px">
-                      Hello {userProfile.name.toUpperCase()}.
+                      Hello {userProfile.name.toUpperCase()}
                     </Heading>
                     <Heading fontSize="md">Welcome back!</Heading>
                   </Flex>
@@ -609,7 +681,7 @@ const Dashboard = () => {
                   Terms & Conditions
                 </Text>
                 <Text color="gray.500" fontSize="xs">
-                  codeminded.dev@gmail.com
+                  codeminded.dev@example.com
                 </Text>
               </Box>
             </Box>
